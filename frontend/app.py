@@ -19,7 +19,7 @@ from datetime import date, datetime
 
 
 # ── Config ────────────────────────────────────────────────────────────────────
-API_BASE = "http://localhost:8000"
+API_BASE = "https://mira-health-app-0h7b.onrender.com"
 PAGE_SIZE = 10
 
 st.set_page_config(
