@@ -85,9 +85,8 @@ Write a 2-3 sentence personalised health assessment for this patient.
 
     # ── Step 4: Format combined remarks ──────────────────────────────────────
     remarks = (
-        f"{emoji} ML Risk Prediction: {label.upper()} "
-        f"({confidence}% confidence)\n\n"
-        f"{ai_text}"
-    )
+    f"{emoji} ML Risk Prediction: {label.upper()}\n\n"
+    f"{ai_text}"
+)
 
     return remarks
