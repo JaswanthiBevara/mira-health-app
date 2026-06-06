@@ -2,7 +2,7 @@
 main.py
 ───────
 FastAPI application — all CRUD routes for patient records.
-Auto-creates MySQL table on startup.
+Auto-creates SQLite table on startup.
 
 Run with:
     uvicorn backend.main:app --reload --port 8000
