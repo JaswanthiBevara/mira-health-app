@@ -1,8 +1,8 @@
 # 🏥 MIRA — Medical Intelligence Robotic Automation
 
-A health prediction application that collects patient blood test results and generates AI-powered health insights using **Groq AI (LLaMA 3.3 70B)**.
+A health prediction app that collects patient blood test results and generates AI-powered health insights.
 
-Built with: **Python · FastAPI · MySQL · SQLAlchemy · Streamlit · Groq API**
+**Built with:** Python · FastAPI · SQLite · Streamlit · Groq AI (LLaMA 3.3 70B)
 
 ---
 
@@ -11,41 +11,39 @@ Built with: **Python · FastAPI · MySQL · SQLAlchemy · Streamlit · Groq API*
 ```
 mira/
 ├── backend/
-│   ├── __init__.py       # Package init
-│   ├── database.py       # MySQL connection (SQLAlchemy)
-│   ├── models.py         # ORM model → patients table
-│   ├── schemas.py        # Pydantic validation schemas
-│   ├── ai_service.py     # Groq API integration
-│   └── main.py           # FastAPI routes (CRUD)
+│   ├── database.py       # Database connection
+│   ├── models.py         # Patient data model
+│   ├── schemas.py        # Input validation
+│   ├── ml_model.py       # ML risk prediction
+│   ├── ai_service.py     # Groq AI integration
+│   └── main.py           # API routes
 ├── frontend/
 │   └── app.py            # Streamlit UI
 ├── .env.example          # Environment variable template
-├── .env                  # ← YOU CREATE THIS (never commit)
-├── .gitignore
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Setup Instructions
+## 🚀 Getting Started
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/mira-health-app.git
+git clone https://github.com/JaswanthiBevara/mira-health-app.git
 cd mira-health-app
 ```
 
-### 2. Create a virtual environment
+### 2. Create and activate a virtual environment
 
 ```bash
 python -m venv venv
 
-# Activate on Windows
+# Windows
 venv\Scripts\activate
 
-# Activate on macOS/Linux
+# macOS/Linux
 source venv/bin/activate
 ```
 
@@ -55,55 +53,38 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Set up MySQL database
-
-Open MySQL and run:
-
-```sql
-CREATE DATABASE mira_db;
-CREATE USER 'mira_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON mira_db.* TO 'mira_user'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-### 5. Configure environment variables
+### 4. Set up environment variables
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your actual values:
+Add your Groq API key to the `.env` file:
 
 ```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=mira_db
-DB_USER=mira_user
-DB_PASSWORD=your_mysql_password
-
 GROQ_API_KEY=your_groq_api_key
 ```
 
-> Get a **free Groq API key** at https://console.groq.com
+> Get a free Groq API key at https://console.groq.com
 
-### 6. Run the backend (FastAPI)
+### 5. Run the backend
 
 ```bash
 uvicorn backend.main:app --reload --port 8000
 ```
 
-- API runs at: http://localhost:8000
-- Interactive API docs: http://localhost:8000/docs
+The API will be available at **http://localhost:8000**
+Interactive API docs at **http://localhost:8000/docs**
 
-### 7. Run the frontend (Streamlit)
+### 6. Run the frontend
 
-Open a **second terminal** (with venv activated):
+Open a second terminal and run:
 
 ```bash
 streamlit run frontend/app.py
 ```
 
-- UI runs at: http://localhost:8501
+The app will open at **http://localhost:8501**
 
 ---
 
@@ -112,61 +93,39 @@ streamlit run frontend/app.py
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | Health check |
-| POST | `/patients` | Create patient + AI prediction |
-| GET | `/patients` | List all patients |
-| GET | `/patients/{id}` | Get single patient |
-| PUT | `/patients/{id}` | Update patient + refresh AI |
-| DELETE | `/patients/{id}` | Delete patient |
-
-Full interactive docs available at `/docs` when backend is running.
+| POST | `/patients` | Add a new patient |
+| GET | `/patients` | View all patients |
+| GET | `/patients/{id}` | View one patient |
+| PUT | `/patients/{id}` | Update a patient |
+| DELETE | `/patients/{id}` | Delete a patient |
 
 ---
 
-## 🤖 AI Prediction
+## 🤖 How AI Works
 
-When a patient record is created or updated, the app sends blood test values to the **Groq API** (LLaMA 3.3 70B model) and receives a 2–3 sentence health risk assessment stored in the `remarks` field.
+When a patient record is created or updated, MIRA:
 
-- **Free tier**: 14,400 requests/day
-- **Speed**: Sub-second inference
-- **Model**: `llama-3.3-70b-versatile`
-
----
-
-## 🗃️ Database Schema
-
-```sql
-CREATE TABLE patients (
-    id           INT PRIMARY KEY AUTO_INCREMENT,
-    full_name    VARCHAR(150) NOT NULL,
-    dob          DATE NOT NULL,
-    email        VARCHAR(200) NOT NULL UNIQUE,
-    glucose      FLOAT NOT NULL,
-    haemoglobin  FLOAT NOT NULL,
-    cholesterol  FLOAT NOT NULL,
-    remarks      TEXT
-);
-```
-
-> SQLAlchemy auto-creates this table on first run.
+1. Runs blood values through a **RandomForest ML model** to predict risk level (Low / Medium / High)
+2. Sends the result to **Groq AI (LLaMA 3.3 70B)** to generate a personalised 2–3 sentence health assessment
+3. Stores the combined result in the patient's `remarks` field
 
 ---
 
 ## ✅ Features
 
-- Full CRUD operations for patient records
-- Input validation (email format, DOB not in future, numeric blood values)
-- AI-generated health prediction on every create/update
-- Clean Streamlit UI with tab navigation
-- MySQL persistent storage
-- Environment-based configuration (no hardcoded credentials)
+- Add, view, edit, and delete patient records
+- Validates email format, date of birth, and blood test values
+- Detects duplicate patient entries
+- AI-generated health risk assessment for every patient
+- Simple and clean Streamlit interface
+- Data stored locally using SQLite — no database setup needed
 
 ---
 
-## 🔒 Security Notes
+## 🔒 Security
 
-- All credentials stored in `.env` (excluded from git via `.gitignore`)
-- Never commit your `.env` file
-- Only `.env.example` with placeholder values is committed
+- API keys are stored in `.env` and never committed to GitHub
+- `.env` is excluded via `.gitignore`
 
 ---
 
